@@ -9,6 +9,7 @@ class TimeBasedModel(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
     updated_at = models.DateTimeField(auto_now=True, verbose_name="Обновлено")
 
+
 class Group(TimeBasedModel):
     class Meta:
         verbose_name = "Поток"
@@ -28,6 +29,7 @@ class Exam(TimeBasedModel):
 
     def __str__(self):
         return self.name
+
     name = models.CharField(max_length=255, verbose_name="Предмет")
 
 
@@ -39,7 +41,7 @@ class Event(TimeBasedModel):
     group = models.ForeignKey(Group, on_delete=models.DO_NOTHING, verbose_name="Поток")
     exam = models.ForeignKey(Exam, on_delete=models.DO_NOTHING, verbose_name="Экзамен")
     date_time = models.DateTimeField(auto_now_add=False, null=False)
-    link = models.CharField(max_length=4000, null=True)
+    link = models.CharField(max_length=4000)
 
 # class TelegramUser(TimeBasedModel):
 #     class Meta:
