@@ -1,12 +1,12 @@
 from django.contrib import admin
 
-from src.examer.models import Exam
+from ..models import Exam
 
 
 class ExamAdmin(admin.ModelAdmin):
-    list_display = ["title"]
-    list_display_links = ["title"]
-    search_fields = ["title"]
+    list_display = ["name"]
+    list_display_links = ["name"]
+    search_fields = ["name"]
 
 
 admin.site.register(Exam, ExamAdmin)

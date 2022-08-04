@@ -21,6 +21,18 @@ class Group(TimeBasedModel):
     name = models.CharField(max_length=255, verbose_name="Название потока")
     visible = models.BooleanField(default=False, verbose_name="Скрыктый поток")
 
+    def save(self, *args, **kwargs):
+        visible_changed = False
+        if not self.pk:  # new object
+            visible_changed = True
+        else:
+            orig_obj = Group.objects.get(pk=self.pk)
+            if orig_obj.visible != self.visible:
+                visible_changed = True
+        if visible_changed:
+            print(1111)
+        super(Group, self).save(*args, **kwargs)
+
 
 class Exam(TimeBasedModel):
     class Meta:
@@ -38,21 +50,53 @@ class Event(TimeBasedModel):
         verbose_name = "Событие"
         verbose_name_plural = "Список событий"
 
-    group = models.ForeignKey(Group, on_delete=models.DO_NOTHING, verbose_name="Поток")
-    exam = models.ForeignKey(Exam, on_delete=models.DO_NOTHING, verbose_name="Экзамен")
+    group = models.ForeignKey(Group, on_delete=models.CASCADE, verbose_name="Поток")
+    exam = models.ForeignKey(Exam, on_delete=models.CASCADE, verbose_name="Экзамен")
     date_time = models.DateTimeField(auto_now_add=False, null=False)
     link = models.CharField(max_length=4000)
 
-# class TelegramUser(TimeBasedModel):
-#     class Meta:
-#         verbose_name = "Пользователь"
-#         verbose_name_plural = "Пользователи"
-#
-#     id = models.AutoField(primary_key=True)
-#     user_id = models.BigIntegerField(unique=True, verbose_name="UserID")
-#     name = models.CharField(max_length=255, verbose_name="UserName")
-#     user_role = models.CharField(max_length=255, verbose_name="Роль")
-#     state = models.IntegerField(verbose_name="Работает?", default=1)
-#     phone = models.CharField(max_length=12, unique=True)
-#     chat_id = models.BigIntegerField(verbose_name="Чат пользователя", default=0)
-#     chanel_id = models.BigIntegerField(verbose_name="Канал пользователя", default=0)
+    def save(self, *args, **kwargs):
+        time_changed = False
+        if not self.pk:  # new object
+            time_changed = True
+        else:
+            orig_obj = Event.objects.get(pk=self.pk)
+            if orig_obj.date_time != self.date_time:
+                time_changed = True
+        if time_changed:
+            print(222)
+        super(Event, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return f"Экзамен по предмету {self.exam.name} потока {self.group.name}"
+
+
+class UserSubscriptions(TimeBasedModel):
+    class Meta:
+        verbose_name = "Подписки Пользователей"
+        verbose_name_plural = "Подписки Пользователей"
+
+    user = models.OneToOneField("TelegramUser", on_delete=models.CASCADE, verbose_name="Пользователь")
+    group = models.ForeignKey(Group, on_delete=models.CASCADE, verbose_name="Поток")
+
+
+class UserExams(TimeBasedModel):
+    class Meta:
+        verbose_name = "Экзамены Пользователей"
+        verbose_name_plural = "Экзамены Пользователей"
+
+    user = models.OneToOneField("TelegramUser", on_delete=models.CASCADE, verbose_name="Пользователь")
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, verbose_name="Проводимый экзамен")
+
+
+class TelegramUser(TimeBasedModel):
+    class Meta:
+        verbose_name = "Пользователь"
+        verbose_name_plural = "Пользователи"
+
+    def __str__(self):
+        return self.name
+
+    chat_id = models.BigIntegerField(unique=True, verbose_name="UserID")
+    name = models.CharField(max_length=255, verbose_name="Имя Пользователя")
+    phone_number = models.CharField(max_length=30, verbose_name="Номер телефона")

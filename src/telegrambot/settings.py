@@ -76,7 +76,7 @@ WSGI_APPLICATION = "telegrambot.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "usupport",
+        "NAME": "examer",
         "USER": "postgres",
         "PASSWORD": "postgres",
         "HOST": os.environ.get("DBHOST"),
@@ -105,7 +105,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
 
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = "ru-ru"
 
 TIME_ZONE = "UTC"
 
