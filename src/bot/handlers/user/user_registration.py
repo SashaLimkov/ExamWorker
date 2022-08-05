@@ -3,14 +3,13 @@ from aiogram.dispatcher import FSMContext
 
 from bot.config.loader import bot
 from bot.data import text_data as td
+from bot.handlers.user.commands import user_menu
 from bot.keyboards import inline as ik
-from bot.states import UserRegistration
 from bot.services.db import user as user_db
+from bot.states import UserRegistration
 from bot.utils.deleter import delete_user_message
-
 from bot.utils.number_validator import is_phone_number_valid
 from bot.utils.state_worker import get_info_from_state
-from examer.models import TelegramUser
 
 
 async def start_client(call: types.CallbackQuery, state: FSMContext):
@@ -79,21 +78,5 @@ async def confirm_data(call: types.CallbackQuery, state: FSMContext):
     phone_number = await get_info_from_state(data, "phone_number")
     name = call.message.chat.first_name
     await user_db.create_user(chat_id=user_id, phone_number=phone_number, name=name)
-    await client_act_menu(call=call)
+    await user_menu(call.message, state)
 
-
-async def client_act_menu(call: types.CallbackQuery):
-    user_id = call.message.chat.id
-    user = await user_db.get_user(user_id)
-    await bot.edit_message_text(
-        chat_id=call.message.chat.id,
-        text=f"{user.name}, здравствуйте!",
-        message_id=call.message.message_id,
-        reply_markup=await ik.get_user_actions()
-    )
-
-
-async def check(call: types.CallbackQuery, state: FSMContext):
-    print(call.data)
-    print(await state.get_state())
-    print(await state.get_data())
